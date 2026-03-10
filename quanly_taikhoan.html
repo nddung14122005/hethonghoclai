@@ -3,138 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Tài khoản</title>
+    <title>Quản lý Tài khoản - Admin</title>
     <style>
-        /* CSS dùng chung cho layout */
-        body { font-family: Arial, sans-serif; display: flex; margin: 0; height: 100vh; }
-        nav { width: 250px; background-color: #2c3e50; color: white; padding: 20px 0; }
-        nav ul { list-style-type: none; padding: 0; margin: 0; }
+        /* CSS chuẩn đồng bộ với các trang khác */
+        body { font-family: Arial, sans-serif; display: flex; margin: 0; height: 100vh; background-color: #f4f6f7; }
+        
+        nav { width: 250px; background-color: #2c3e50; color: white; display: flex; flex-direction: column; }
+        nav ul { list-style-type: none; padding: 0; margin: 0; display: flex; flex-direction: column; flex-grow: 1; }
         nav ul li { border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
-        nav ul li:first-child { border-top: 1px solid rgba(255, 255, 255, 0.2); }
         nav ul li a { color: white; text-decoration: none; display: block; padding: 15px 20px; transition: 0.2s; }
         nav ul li a:hover { background-color: #34495e; padding-left: 25px; } 
-        main { flex-grow: 1; padding: 30px; background-color: #f4f6f7; overflow-y: auto; }
         
-        /* CSS cho Form và Table */
-        .card { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
-        h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        .active-menu { background-color: #34495e; padding-left: 25px; font-weight: bold; border-left: 4px solid #3498db; }
+        .logout-item { margin-top: auto; background-color: #c0392b; border-bottom: none; }
+        .logout-item a:hover { background-color: #e74c3c; padding-left: 20px; }
+
+        main { flex-grow: 1; padding: 30px; overflow-y: auto; }
         
+        .card { background-color: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; margin-bottom: 20px; }
+        
+        /* Form thêm tài khoản */
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         
-        .btn { padding: 10px 15px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .btn:hover { background-color: #2ecc71; }
+        .btn-add { padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; font-weight: bold; }
+        .btn-add:hover { background-color: #2ecc71; }
         
+        /* Bảng hiển thị */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; }
         table, th, td { border: 1px solid #bdc3c7; }
-        th, td { padding: 10px; text-align: left; }
-        th { background-color: #ecf0f1; }
+        th, td { padding: 12px; text-align: left; }
+        th { background-color: #ecf0f1; color: #2c3e50; }
         
-        /* Ẩn hiện các trường nhập liệu tùy theo loại tài khoản */
-        .student-fields { display: none; }
+        .btn-delete { background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .btn-delete:hover { background-color: #c0392b; }
+
+        /* Ẩn hiện form động */
+        .dynamic-fields { display: none; background-color: #f8f9fa; padding: 15px; border-radius: 5px; border: 1px dashed #bdc3c7; margin-bottom: 15px;}
     </style>
 </head>
 <body>
-
     <nav>
         <ul>
             <li><a href="trangchu1.html">Trang chủ</a></li>
             <li><a href="thongtin_admin.html">Xem thông tin cá nhân</a></li>
-            <li><a href="quanly_taikhoan.html" style="background-color: #34495e; padding-left: 25px;">Quản lý tài khoản</a></li>
+            <li><a href="quanly_taikhoan.html" class="active-menu">Quản lý tài khoản</a></li>
             <li><a href="quanly_sinhvien.html">Quản lý sinh viên</a></li>
-            <li><a href="danhsach_mon_dangkihoclai.html">DS môn được học lại & Đăng ký</a></li>
+            <li><a href="danhsach_mon_dangkihoclai.html">DS môn học lại & Đăng ký</a></li>
             <li><a href="danhsach_da_dangky.html">Danh sách đã đăng ký học lại</a></li>
             <li><a href="lich_hoclai.html">Xem lịch học lại</a></li>
             <li><a href="huy_dangky.html">Hủy đăng ký học lại</a></li>
+            <li class="logout-item"><a href="#" onclick="dangXuat()">Đăng xuất</a></li>
         </ul>
     </nav>
 
     <main>
-        <h1>Quản lý Tài khoản</h1>
+        <h1>Quản lý Tài khoản Hệ thống</h1>
         
         <div class="card">
             <h2>Cấp tài khoản mới</h2>
             <form id="addAccountForm" onsubmit="themTaiKhoan(event)">
-                <div class="form-group">
-                    <label>Loại tài khoản:</label>
-                    <select id="role" onchange="doiLoaiTaiKhoan()">
-                        <option value="student">Sinh viên</option>
-                        <option value="admin">Quản trị viên (Admin)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Tên đăng nhập:</label>
-                    <input type="text" id="username" required>
-                </div>
-                <div class="form-group">
-                    <label>Mật khẩu:</label>
-                    <input type="password" id="password" required>
-                </div>
-                <div class="form-group">
-                    <label>Họ và tên:</label>
-                    <input type="text" id="fullname" required>
-                </div>
-
-                <div id="student-only" class="student-fields" style="display: block;">
-                    <div class="form-group">
-                        <label>Mã sinh viên:</label>
-                        <input type="text" id="studentId">
+                <div style="display: flex; gap: 20px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Loại tài khoản:</label>
+                        <select id="role" onchange="doiLoaiTaiKhoan()" required>
+                            <option value="student" selected>Sinh viên</option>
+                            <option value="admin">Quản trị viên (Admin)</option>
+                        </select>
                     </div>
-                    <div class="form-group">
-                        <label>Lớp (VD: AI-ITS K65):</label>
-                        <input type="text" id="studentClass">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Tên đăng nhập:</label>
+                        <input type="text" id="username" required placeholder="VD: sv_nguyenvana">
                     </div>
-                    <div class="form-group">
-                        <label>Chuyên ngành (VD: Trí tuệ nhân tạo):</label>
-                        <input type="text" id="major">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Mật khẩu:</label>
+                        <input type="password" id="password" required placeholder="Nhập mật khẩu">
                     </div>
                 </div>
 
-                <div id="admin-only" style="display: none;">
-                    <div class="form-group">
-                        <label>Chức vụ:</label>
-                        <input type="text" id="position">
-                    </div>
-                    <div class="form-group">
-                        <label>Email liên hệ:</label>
-                        <input type="email" id="email">
+                <div class="form-group">
+                    <label>Họ và tên người dùng:</label>
+                    <input type="text" id="fullname" required placeholder="VD: Nguyễn Văn A">
+                </div>
+
+                <div id="student-only" class="dynamic-fields" style="display: block;">
+                    <div style="display: flex; gap: 20px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Mã sinh viên:</label>
+                            <input type="text" id="studentId" placeholder="VD: 20231111">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Lớp:</label>
+                            <input type="text" id="studentClass" placeholder="VD: IT-K65">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Chuyên ngành:</label>
+                            <input type="text" id="major" placeholder="VD: Công nghệ thông tin">
+                        </div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn">Thêm tài khoản</button>
+                <div id="admin-only" class="dynamic-fields" style="display: none;">
+                    <div style="display: flex; gap: 20px;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>Chức vụ:</label>
+                            <input type="text" id="position" placeholder="VD: Chuyên viên đào tạo">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>Email liên hệ:</label>
+                            <input type="email" id="email" placeholder="VD: admin@truong.edu.vn">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-add">Thêm tài khoản</button>
             </form>
         </div>
 
         <div class="card">
-            <h2>Danh sách tài khoản hệ thống</h2>
+            <h2>Danh sách tất cả tài khoản</h2>
             <table>
                 <thead>
                     <tr>
+                        <th>STT</th>
                         <th>Tên đăng nhập</th>
                         <th>Phân quyền</th>
                         <th>Họ và tên</th>
-                        <th>Chi tiết (Mã SV / Chức vụ)</th>
+                        <th>Chi tiết (Mã SV/Chức vụ)</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
+                <tbody id="account-table-body">
                     </tbody>
             </table>
         </div>
     </main>
 
     <script>
-        // 1. Khởi tạo dữ liệu nếu chưa có trong trình duyệt
-        let danhSachTaiKhoan = JSON.parse(localStorage.getItem("dbTaiKhoan"));
-        if (!danhSachTaiKhoan) {
-            danhSachTaiKhoan = [
-                { username: "admin", password: "123", role: "admin", info: { name: "Nguyễn Quản Trị", position: "Trưởng phòng Đào tạo", email: "admin@truong.edu.vn" } },
-                { username: "sv1", password: "123", role: "student", info: { name: "Trần Văn Sinh", studentId: "20230001", class: "AI-ITS K65", major: "Trí tuệ nhân tạo", status: "Đang học" } }
-            ];
-            localStorage.setItem("dbTaiKhoan", JSON.stringify(danhSachTaiKhoan));
+        // 1. Kiểm tra đăng nhập
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser || currentUser.role !== "admin") {
+            alert("Bạn không có quyền truy cập trang này!");
+            window.location.href = "dangnhap.html";
         }
 
-        // 2. Hàm thay đổi form khi chọn loại tài khoản
+        // 2. Hàm thay đổi form khi chọn loại tài khoản (Admin hoặc Sinh viên)
         function doiLoaiTaiKhoan() {
             const role = document.getElementById("role").value;
             if (role === "student") {
@@ -146,68 +161,98 @@
             }
         }
 
-        // 3. Hàm hiển thị dữ liệu ra bảng
-        function hienThiBang() {
-            const tbody = document.getElementById("tableBody");
-            tbody.innerHTML = ""; // Xóa dữ liệu cũ
-            
-            danhSachTaiKhoan.forEach(tk => {
-                let chiTiet = tk.role === 'student' ? tk.info.studentId : tk.info.position;
+        // 3. Hàm tải danh sách tài khoản từ localStorage ra bảng
+        function loadDanhSachTaiKhoan() {
+            let dbTaiKhoan = JSON.parse(localStorage.getItem("dbTaiKhoan")) || [];
+            const tbody = document.getElementById("account-table-body");
+            tbody.innerHTML = ""; 
+
+            dbTaiKhoan.forEach((tk, index) => {
                 let roleName = tk.role === 'student' ? 'Sinh viên' : 'Admin';
+                let chiTiet = tk.role === 'student' ? (tk.info.studentId || '') : (tk.info.position || '');
                 
+                // Không cho phép Admin tự xóa chính tài khoản mình đang dùng
+                let nutXoa = tk.username === currentUser.username 
+                    ? `<span style="color: #7f8c8d; font-size: 13px;">Đang đăng nhập</span>` 
+                    : `<button class="btn-delete" onclick="xoaTaiKhoan('${tk.username}')">Xóa</button>`;
+
                 let row = `<tr>
-                    <td>${tk.username}</td>
-                    <td>${roleName}</td>
+                    <td>${index + 1}</td>
+                    <td><strong>${tk.username}</strong></td>
+                    <td><span style="color: ${tk.role === 'admin' ? '#e74c3c' : '#2980b9'}; font-weight: bold;">${roleName}</span></td>
                     <td>${tk.info.name}</td>
                     <td>${chiTiet}</td>
+                    <td>${nutXoa}</td>
                 </tr>`;
                 tbody.innerHTML += row;
             });
         }
 
-        // 4. Hàm xử lý khi bấm nút "Thêm tài khoản"
+        // 4. Hàm xử lý khi bấm nút Thêm tài khoản
         function themTaiKhoan(event) {
-            event.preventDefault(); // Ngăn load lại trang
+            event.preventDefault(); 
 
-            const role = document.getElementById("role").value;
-            const newAccount = {
-                username: document.getElementById("username").value,
-                password: document.getElementById("password").value,
-                role: role,
-                info: { name: document.getElementById("fullname").value }
-            };
-
-            // Lấy thêm thông tin tùy theo role
-            if (role === "student") {
-                newAccount.info.studentId = document.getElementById("studentId").value;
-                newAccount.info.class = document.getElementById("studentClass").value;
-                newAccount.info.major = document.getElementById("major").value;
-                newAccount.info.status = "Đang học";
-            } else {
-                newAccount.info.position = document.getElementById("position").value;
-                newAccount.info.email = document.getElementById("email").value;
-            }
+            let dbTaiKhoan = JSON.parse(localStorage.getItem("dbTaiKhoan")) || [];
+            const usernameInput = document.getElementById("username").value.trim();
+            const roleInput = document.getElementById("role").value;
 
             // Kiểm tra trùng lặp tên đăng nhập
-            const isExist = danhSachTaiKhoan.some(tk => tk.username === newAccount.username);
+            const isExist = dbTaiKhoan.some(tk => tk.username === usernameInput);
             if(isExist) {
-                alert("Tên đăng nhập này đã tồn tại!");
+                alert("Lỗi: Tên đăng nhập này đã tồn tại trong hệ thống!");
                 return;
             }
 
-            // Lưu vào mảng và cập nhật localStorage
-            danhSachTaiKhoan.push(newAccount);
-            localStorage.setItem("dbTaiKhoan", JSON.stringify(danhSachTaiKhoan));
+            // Tạo object tài khoản mới
+            const newAccount = {
+                username: usernameInput,
+                password: document.getElementById("password").value,
+                role: roleInput,
+                info: { name: document.getElementById("fullname").value.trim() }
+            };
 
-            // Reset form và vẽ lại bảng
+            // Lấy thông tin bổ sung tùy theo loại tài khoản
+            if (roleInput === "student") {
+                newAccount.info.studentId = document.getElementById("studentId").value.trim();
+                newAccount.info.class = document.getElementById("studentClass").value.trim();
+                newAccount.info.major = document.getElementById("major").value.trim();
+                newAccount.info.status = "Đang học";
+            } else {
+                newAccount.info.position = document.getElementById("position").value.trim();
+                newAccount.info.email = document.getElementById("email").value.trim();
+            }
+
+            // Lưu vào kho và vẽ lại bảng
+            dbTaiKhoan.push(newAccount);
+            localStorage.setItem("dbTaiKhoan", JSON.stringify(dbTaiKhoan));
+            
             document.getElementById("addAccountForm").reset();
-            doiLoaiTaiKhoan(); // Trả form về trạng thái mặc định
-            hienThiBang();
-            alert("Thêm tài khoản thành công!");
+            doiLoaiTaiKhoan(); 
+            loadDanhSachTaiKhoan();
+            alert("Đã cấp tài khoản thành công!");
         }
 
-        // Chạy hiển thị bảng lần đầu khi load trang
-        hienThiBang();
+        // 5. Hàm Xóa tài khoản
+        function xoaTaiKhoan(username) {
+            if (confirm(`Bạn có chắc chắn muốn xóa vĩnh viễn tài khoản "${username}" không?`)) {
+                let dbTaiKhoan = JSON.parse(localStorage.getItem("dbTaiKhoan")) || [];
+                
+                // Lọc bỏ tài khoản cần xóa
+                dbTaiKhoan = dbTaiKhoan.filter(tk => tk.username !== username);
+                
+                localStorage.setItem("dbTaiKhoan", JSON.stringify(dbTaiKhoan));
+                loadDanhSachTaiKhoan();
+            }
+        }
+
+        // 6. Hàm đăng xuất
+        function dangXuat() {
+            localStorage.removeItem("currentUser");
+            window.location.href = "dangnhap.html";
+        }
+
+        // Gọi hàm load dữ liệu ngay khi mở trang
+        loadDanhSachTaiKhoan();
     </script>
 </body>
 </html>
