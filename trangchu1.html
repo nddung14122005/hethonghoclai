@@ -67,7 +67,7 @@
         const user = JSON.parse(localStorage.getItem("currentUser"));
         if (!user || user.role !== "admin") {
             alert("Bạn không có quyền truy cập trang này!");
-            window.location.href = "dangnhap.html"; 
+            window.location.href = "index.html"; 
         } else {
             document.getElementById("admin-name").innerText = user.info.name;
             document.getElementById("admin-position").innerText = user.info.position;
@@ -80,4 +80,5 @@
         }
     </script>
 </body>
+
 </html>
