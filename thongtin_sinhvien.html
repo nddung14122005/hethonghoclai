@@ -91,7 +91,7 @@
         const user = JSON.parse(localStorage.getItem("currentUser"));
         if (!user || user.role !== "student") {
             alert("Bạn không có quyền truy cập trang này!");
-            window.location.href = "dangnhap.html";
+            window.location.href = "index.html";
         } else {
             document.getElementById("sv-name").innerText = user.info.name;
             document.getElementById("sv-id").innerText = user.info.studentId || "Chưa cập nhật";
@@ -110,4 +110,5 @@
         }
     </script>
 </body>
+
 </html>
