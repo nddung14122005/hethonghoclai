@@ -23,8 +23,13 @@
         table, th, td { border: 1px solid #bdc3c7; }
         th, td { padding: 12px; text-align: left; }
         th { background-color: #ecf0f1; }
+        
         .status-badge { background-color: #27ae60; color: white; padding: 5px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; }
         .empty-msg { text-align: center; color: #7f8c8d; font-style: italic; padding: 20px; }
+        
+        /* Nút Hủy dành cho sinh viên */
+        .btn-cancel { background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
+        .btn-cancel:hover { background-color: #c0392b; }
     </style>
 </head>
 <body>
@@ -42,7 +47,7 @@
         <h1>Kết quả đăng ký</h1>
         
         <div class="card">
-            <h2>Các môn học lại bạn đã đăng ký thành công</h2>
+            <h2>Các môn học lại bạn đã đăng ký</h2>
             <table>
                 <thead>
                     <tr>
@@ -51,7 +56,7 @@
                         <th>Tên môn học</th>
                         <th>Số tín chỉ</th>
                         <th>Trạng thái</th>
-                    </tr>
+                        <th>Thao tác</th> </tr>
                 </thead>
                 <tbody id="registered-table">
                     </tbody>
@@ -66,7 +71,6 @@
         }
 
         function loadKetQuaDangKy() {
-            // Lấy đúng kho chứa đăng ký của sinh viên này dựa vào username
             const keyDangKy = "dangKy_" + currentUser.username;
             const danhSachDaDangKy = JSON.parse(localStorage.getItem(keyDangKy)) || [];
             
@@ -74,7 +78,7 @@
             tbody.innerHTML = "";
             
             if (danhSachDaDangKy.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">Bạn chưa đăng ký môn học lại nào.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-msg">Bạn chưa đăng ký môn học lại nào.</td></tr>`;
                 return;
             }
 
@@ -85,8 +89,29 @@
                     <td>${mon.tenMon}</td>
                     <td>${mon.tinChi}</td>
                     <td><span class="status-badge">Đã ghi nhận</span></td>
+                    <td>
+                        <button class="btn-cancel" onclick="sinhVienTuHuyMon('${mon.maMon}', '${mon.tenMon}')">Hủy đăng ký</button>
+                    </td>
                 </tr>`;
             });
+        }
+
+        // Chức năng mới: Sinh viên tự hủy môn
+        function sinhVienTuHuyMon(maMon, tenMon) {
+            if (confirm(`Bạn có chắc chắn muốn HỦY đăng ký môn ${tenMon} (${maMon}) không?`)) {
+                const keyDangKy = "dangKy_" + currentUser.username;
+                let danhSachDaDangKy = JSON.parse(localStorage.getItem(keyDangKy)) || [];
+                
+                // Lọc bỏ môn học mà sinh viên muốn hủy
+                danhSachDaDangKy = danhSachDaDangKy.filter(mon => mon.maMon !== maMon);
+                
+                // Lưu lại danh sách mới vào localStorage
+                localStorage.setItem(keyDangKy, JSON.stringify(danhSachDaDangKy));
+                
+                // Tải lại bảng để cập nhật giao diện
+                loadKetQuaDangKy();
+                alert(`Bạn đã hủy môn ${tenMon} thành công!`);
+            }
         }
 
         function dangXuat() {
@@ -94,6 +119,7 @@
             window.location.href = "dangnhap.html";
         }
 
+        // Gọi hàm hiển thị bảng
         loadKetQuaDangKy();
     </script>
 </body>
