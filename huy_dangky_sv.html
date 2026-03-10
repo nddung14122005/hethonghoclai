@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch Học Lại - Sinh Viên</title>
+    <title>Hủy đăng ký - Sinh Viên</title>
     <style>
         body { font-family: Arial, sans-serif; display: flex; margin: 0; height: 100vh; background-color: #f4f6f7; }
         nav { width: 250px; background-color: #2c3e50; color: white; display: flex; flex-direction: column; }
@@ -24,7 +24,9 @@
         th, td { padding: 12px; text-align: left; }
         th { background-color: #ecf0f1; }
         .empty-msg { text-align: center; color: #7f8c8d; font-style: italic; padding: 20px; }
-        .room-badge { background-color: #f39c12; color: white; padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 13px; }
+        
+        .btn-cancel { background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.2s; }
+        .btn-cancel:hover { background-color: #c0392b; }
     </style>
 </head>
 <body>
@@ -34,28 +36,27 @@
             <li><a href="thongtin_sinhvien.html">Xem thông tin cá nhân</a></li>
             <li><a href="danhsach_mon_dangkihoclai_sv.html">DS môn học lại & Đăng ký</a></li>
             <li><a href="danhsach_da_dangky_sv.html">Danh sách đã đăng ký học lại</a></li>
-            <li><a href="lich_hoclai_sv.html" class="active-menu">Xem lịch học lại</a></li>
-            <li><a href="huy_dangky_sv.html">Hủy đăng ký học lại</a></li>
-
+            <li><a href="lich_hoclai_sv.html">Xem lịch học lại</a></li>
+            <li><a href="huy_dangky_sv.html" class="active-menu">Hủy đăng ký học lại</a></li>
             <li class="logout-item"><a href="#" onclick="dangXuat()">Đăng xuất</a></li>
         </ul>
     </nav>
     <main>
-        <h1>Thời Khóa Biểu Học Lại</h1>
+        <h1>Quản lý Hủy Đăng Ký</h1>
         
         <div class="card">
-            <h2>Lịch học của các môn bạn đã đăng ký</h2>
+            <h2>Chọn môn học bạn muốn hủy</h2>
             <table>
                 <thead>
                     <tr>
+                        <th>STT</th>
                         <th>Mã môn</th>
                         <th>Tên môn học</th>
-                        <th>Thứ</th>
-                        <th>Thời gian</th>
-                        <th>Phòng học</th>
+                        <th>Số tín chỉ</th>
+                        <th>Thao tác</th>
                     </tr>
                 </thead>
-                <tbody id="student-schedule-table">
+                <tbody id="cancel-table-body">
                     </tbody>
             </table>
         </div>
@@ -67,50 +68,45 @@
             window.location.href = "index.html";
         }
 
-        function loadLichHocSinhVien() {
-            // 1. Lấy danh sách các môn SV này đã đăng ký
+        function loadDanhSachHuy() {
             const keyDangKy = "dangKy_" + currentUser.username;
-            const cacMonDaDangKy = JSON.parse(localStorage.getItem(keyDangKy)) || [];
+            const danhSachDaDangKy = JSON.parse(localStorage.getItem(keyDangKy)) || [];
             
-            // 2. Lấy toàn bộ lịch của trường do Admin xếp
-            const dbLichHocLai = JSON.parse(localStorage.getItem("dbLichHocLai")) || [];
-            
-            const tbody = document.getElementById("student-schedule-table");
+            const tbody = document.getElementById("cancel-table-body");
             tbody.innerHTML = "";
-
-            if (cacMonDaDangKy.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">Bạn chưa đăng ký môn học nào nên chưa có lịch.</td></tr>`;
+            
+            if (danhSachDaDangKy.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">Bạn chưa đăng ký môn học lại nào để có thể hủy.</td></tr>`;
                 return;
             }
 
-            let coLich = false;
-
-            // 3. Quét từng môn đã đăng ký, đối chiếu với lịch trường để hiển thị
-            cacMonDaDangKy.forEach(monDangKy => {
-                const lichCuaMon = dbLichHocLai.find(l => l.maMon === monDangKy.maMon);
-                
-                if (lichCuaMon) {
-                    coLich = true;
-                    tbody.innerHTML += `<tr>
-                        <td><strong>${monDangKy.maMon}</strong></td>
-                        <td>${monDangKy.tenMon}</td>
-                        <td style="color: #c0392b; font-weight: bold;">${lichCuaMon.thuHoc}</td>
-                        <td>${lichCuaMon.caHoc}</td>
-                        <td><span class="room-badge">${lichCuaMon.phongHoc}</span></td>
-                    </tr>`;
-                } else {
-                    // Môn đã đăng ký nhưng Admin chưa xếp lịch
-                    coLich = true;
-                    tbody.innerHTML += `<tr>
-                        <td><strong>${monDangKy.maMon}</strong></td>
-                        <td>${monDangKy.tenMon}</td>
-                        <td colspan="3" style="color: #7f8c8d; font-style: italic;">Phòng đào tạo đang xếp lịch...</td>
-                    </tr>`;
-                }
+            danhSachDaDangKy.forEach((mon, index) => {
+                tbody.innerHTML += `<tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${mon.maMon}</strong></td>
+                    <td>${mon.tenMon}</td>
+                    <td>${mon.tinChi}</td>
+                    <td>
+                        <button class="btn-cancel" onclick="sinhVienTuHuyMon('${mon.maMon}', '${mon.tenMon}')">Hủy đăng ký</button>
+                    </td>
+                </tr>`;
             });
+        }
 
-            if (!coLich) {
-                tbody.innerHTML = `<tr><td colspan="5" class="empty-msg">Hiện chưa có lịch cho các môn bạn đăng ký.</td></tr>`;
+        function sinhVienTuHuyMon(maMon, tenMon) {
+            if (confirm(`Bạn có chắc chắn muốn HỦY đăng ký môn ${tenMon} (${maMon}) không? Hành động này không thể hoàn tác.`)) {
+                const keyDangKy = "dangKy_" + currentUser.username;
+                let danhSachDaDangKy = JSON.parse(localStorage.getItem(keyDangKy)) || [];
+                
+                // Lọc bỏ môn học mà sinh viên muốn hủy
+                danhSachDaDangKy = danhSachDaDangKy.filter(mon => mon.maMon !== maMon);
+                
+                // Lưu lại danh sách mới vào localStorage
+                localStorage.setItem(keyDangKy, JSON.stringify(danhSachDaDangKy));
+                
+                // Tải lại bảng để cập nhật giao diện
+                loadDanhSachHuy();
+                alert(`Bạn đã hủy môn ${tenMon} thành công!`);
             }
         }
 
@@ -119,7 +115,8 @@
             window.location.href = "index.html";
         }
 
-        loadLichHocSinhVien();
+        // Gọi hàm hiển thị bảng
+        loadDanhSachHuy();
     </script>
 </body>
 </html>

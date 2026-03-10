@@ -3,23 +3,31 @@ import csv
 
 app = Flask(__name__)
 
-# Trang login
+# Trang đăng nhập
 @app.route("/")
 def index():
     return render_template("index.html")
 
-# Trang admin
+
+# Trang chủ admin
 @app.route("/admin")
 def admin():
     return render_template("trangchu1.html")
 
-# Trang sinh viên
+
+# Trang chủ sinh viên
 @app.route("/student")
 def student():
     return render_template("trangchu2.html")
 
 
-# THÊM TÀI KHOẢN → LƯU CSV
+# Quản lý tài khoản
+@app.route("/quanly_taikhoan")
+def quanly_taikhoan():
+    return render_template("quanly_taikhoan.html")
+
+
+# Thêm tài khoản và lưu CSV
 @app.route("/them_taikhoan", methods=["POST"])
 def them_taikhoan():
 
@@ -30,14 +38,15 @@ def them_taikhoan():
     with open("taikhoan.csv","a",newline="",encoding="utf-8") as f:
 
         writer = csv.writer(f)
+
         writer.writerow([username,password,role])
 
     return "Thêm tài khoản thành công"
 
 
-# ĐĂNG KÝ HỌC LẠI → LƯU CSV
-@app.route("/dangky_hoclai", methods=["POST"])
-def dangky_hoclai():
+# Đăng ký học lại
+@app.route("/dangky", methods=["POST"])
+def dangky():
 
     mssv = request.form["mssv"]
     monhoc = request.form["monhoc"]
@@ -45,9 +54,11 @@ def dangky_hoclai():
     with open("dangky.csv","a",newline="",encoding="utf-8") as f:
 
         writer = csv.writer(f)
+
         writer.writerow([mssv,monhoc])
 
     return "Đăng ký thành công"
+
 
 if __name__ == "__main__":
     app.run(debug=True)

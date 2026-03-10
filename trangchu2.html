@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang Chủ Sinh Viên</title>
     <style>
-        body { font-family: Arial, sans-serif; display: flex; margin: 0; height: 100vh; }
+        body { font-family: Arial, sans-serif; display: flex; margin: 0; height: 100vh; background-color: #f4f6f7; }
         
         nav { width: 250px; background-color: #2c3e50; color: white; display: flex; flex-direction: column; }
         nav ul { list-style-type: none; padding: 0; margin: 0; display: flex; flex-direction: column; flex-grow: 1; }
@@ -13,15 +13,11 @@
         nav ul li a { color: white; text-decoration: none; display: block; padding: 15px 20px; transition: 0.2s; }
         nav ul li a:hover { background-color: #34495e; padding-left: 25px; } 
         
-        /* CSS riêng cho nút Đăng xuất nằm ở dưới cùng */
-        .logout-item {
-            margin-top: auto; 
-            background-color: #c0392b; 
-            border-bottom: none;
-        }
+        .active-menu { background-color: #34495e; padding-left: 25px; font-weight: bold; border-left: 4px solid #3498db; }
+        .logout-item { margin-top: auto; background-color: #c0392b; border-bottom: none; }
         .logout-item a:hover { background-color: #e74c3c; padding-left: 20px; }
 
-        main { flex-grow: 1; padding: 30px; background-color: #f4f6f7; overflow-y: auto; }
+        main { flex-grow: 1; padding: 30px; overflow-y: auto; }
         .account-info { background-color: white; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 500px; margin-top: 20px; }
         .account-info h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
         .account-info p { margin: 10px 0; font-size: 16px; color: #333; }
@@ -31,11 +27,13 @@
 <body>
     <nav>
         <ul>
-            <li><a href="trangchu2.html">Trang chủ</a></li>
+            <li><a href="trangchu2.html" class="active-menu">Trang chủ</a></li>
             <li><a href="thongtin_sinhvien.html">Xem thông tin cá nhân</a></li>
             <li><a href="danhsach_mon_dangkihoclai_sv.html">DS môn học lại & Đăng ký</a></li>
             <li><a href="danhsach_da_dangky_sv.html">Danh sách đã đăng ký học lại</a></li>
             <li><a href="lich_hoclai_sv.html">Xem lịch học lại</a></li>
+            
+            <li><a href="huy_dangky_sv.html">Hủy đăng ký học lại</a></li>
             
             <li class="logout-item"><a href="#" onclick="dangXuat()">Đăng xuất</a></li>
         </ul>
@@ -55,21 +53,19 @@
     <script>
         const user = JSON.parse(localStorage.getItem("currentUser"));
         if (!user || user.role !== "student") {
-            alert("Bạn không có quyền truy cập trang này!");
             window.location.href = "index.html";
         } else {
             document.getElementById("sv-name").innerText = user.info.name;
-            document.getElementById("sv-id").innerText = user.info.studentId;
-            document.getElementById("sv-class").innerText = user.info.class;
-            document.getElementById("sv-major").innerText = user.info.major;
-            document.getElementById("sv-status").innerText = user.info.status;
+            document.getElementById("sv-id").innerText = user.info.studentId || "Chưa cập nhật";
+            document.getElementById("sv-class").innerText = user.info.class || "Chưa cập nhật";
+            document.getElementById("sv-major").innerText = user.info.major || "Chưa cập nhật";
+            document.getElementById("sv-status").innerText = user.info.status || "Đang học";
         }
 
         function dangXuat() {
-            localStorage.removeItem("currentUser"); // Xóa phiên đăng nhập
-            window.location.href = "dangnhap.html"; // Chuyển về trang đăng nhập
+            localStorage.removeItem("currentUser");
+            window.location.href = "index.html";
         }
     </script>
 </body>
-
 </html>

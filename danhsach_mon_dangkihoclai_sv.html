@@ -36,6 +36,8 @@
             <li><a href="danhsach_mon_dangkihoclai_sv.html" class="active-menu">DS môn học lại & Đăng ký</a></li>
             <li><a href="danhsach_da_dangky_sv.html">Danh sách đã đăng ký học lại</a></li>
             <li><a href="lich_hoclai_sv.html">Xem lịch học lại</a></li>
+            <li><a href="huy_dangky_sv.html">Hủy đăng ký học lại</a></li>
+
             <li class="logout-item"><a href="#" onclick="dangXuat()">Đăng xuất</a></li>
         </ul>
     </nav>
@@ -62,7 +64,7 @@
     <script>
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
         if (!currentUser || currentUser.role !== "student") {
-            window.location.href = "dangnhap.html";
+            window.location.href = "index.html";
         }
 
         // Lấy danh sách môn học do Admin tạo
@@ -122,5 +124,4 @@
         loadDanhSachMonSV();
     </script>
 </body>
-
 </html>

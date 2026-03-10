@@ -65,6 +65,8 @@
             <li><a href="danhsach_mon_dangkihoclai_sv.html">DS môn học lại & Đăng ký</a></li>
             <li><a href="danhsach_da_dangky_sv.html">Danh sách đã đăng ký học lại</a></li>
             <li><a href="lich_hoclai_sv.html">Xem lịch học lại</a></li>
+            <li><a href="huy_dangky_sv.html">Hủy đăng ký học lại</a></li>
+
             <li class="logout-item"><a href="#" onclick="dangXuat()">Đăng xuất</a></li>
         </ul>
     </nav>
@@ -91,7 +93,7 @@
         const user = JSON.parse(localStorage.getItem("currentUser"));
         if (!user || user.role !== "student") {
             alert("Bạn không có quyền truy cập trang này!");
-            window.location.href = "index.html";
+            window.location.href = "dangnhap.html";
         } else {
             document.getElementById("sv-name").innerText = user.info.name;
             document.getElementById("sv-id").innerText = user.info.studentId || "Chưa cập nhật";
@@ -106,9 +108,8 @@
 
         function dangXuat() {
             localStorage.removeItem("currentUser");
-            window.location.href = "dangnhap.html";
+            window.location.href = "index.html";
         }
     </script>
 </body>
-
 </html>
