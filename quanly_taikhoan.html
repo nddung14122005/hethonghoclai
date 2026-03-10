@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Tài khoản</title>
+    <style>
+        /* CSS dùng chung cho layout */
+        body { font-family: Arial, sans-serif; display: flex; margin: 0; height: 100vh; }
+        nav { width: 250px; background-color: #2c3e50; color: white; padding: 20px 0; }
+        nav ul { list-style-type: none; padding: 0; margin: 0; }
+        nav ul li { border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        nav ul li:first-child { border-top: 1px solid rgba(255, 255, 255, 0.2); }
+        nav ul li a { color: white; text-decoration: none; display: block; padding: 15px 20px; transition: 0.2s; }
+        nav ul li a:hover { background-color: #34495e; padding-left: 25px; } 
+        main { flex-grow: 1; padding: 30px; background-color: #f4f6f7; overflow-y: auto; }
+        
+        /* CSS cho Form và Table */
+        .card { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        
+        .btn { padding: 10px 15px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        .btn:hover { background-color: #2ecc71; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table, th, td { border: 1px solid #bdc3c7; }
+        th, td { padding: 10px; text-align: left; }
+        th { background-color: #ecf0f1; }
+        
+        /* Ẩn hiện các trường nhập liệu tùy theo loại tài khoản */
+        .student-fields { display: none; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="trangchu1.html">Trang chủ</a></li>
+            <li><a href="thongtin_admin.html">Xem thông tin cá nhân</a></li>
+            <li><a href="quanly_taikhoan.html" style="background-color: #34495e; padding-left: 25px;">Quản lý tài khoản</a></li>
+            <li><a href="quanly_sinhvien.html">Quản lý sinh viên</a></li>
+            <li><a href="danhsach_mon_dangkihoclai.html">DS môn được học lại & Đăng ký</a></li>
+            <li><a href="danhsach_da_dangky.html">Danh sách đã đăng ký học lại</a></li>
+            <li><a href="lich_hoclai.html">Xem lịch học lại</a></li>
+            <li><a href="huy_dangky.html">Hủy đăng ký học lại</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <h1>Quản lý Tài khoản</h1>
+        
+        <div class="card">
+            <h2>Cấp tài khoản mới</h2>
+            <form id="addAccountForm" onsubmit="themTaiKhoan(event)">
+                <div class="form-group">
+                    <label>Loại tài khoản:</label>
+                    <select id="role" onchange="doiLoaiTaiKhoan()">
+                        <option value="student">Sinh viên</option>
+                        <option value="admin">Quản trị viên (Admin)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tên đăng nhập:</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label>Mật khẩu:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <div class="form-group">
+                    <label>Họ và tên:</label>
+                    <input type="text" id="fullname" required>
+                </div>
+
+                <div id="student-only" class="student-fields" style="display: block;">
+                    <div class="form-group">
+                        <label>Mã sinh viên:</label>
+                        <input type="text" id="studentId">
+                    </div>
+                    <div class="form-group">
+                        <label>Lớp (VD: AI-ITS K65):</label>
+                        <input type="text" id="studentClass">
+                    </div>
+                    <div class="form-group">
+                        <label>Chuyên ngành (VD: Trí tuệ nhân tạo):</label>
+                        <input type="text" id="major">
+                    </div>
+                </div>
+
+                <div id="admin-only" style="display: none;">
+                    <div class="form-group">
+                        <label>Chức vụ:</label>
+                        <input type="text" id="position">
+                    </div>
+                    <div class="form-group">
+                        <label>Email liên hệ:</label>
+                        <input type="email" id="email">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Thêm tài khoản</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Danh sách tài khoản hệ thống</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên đăng nhập</th>
+                        <th>Phân quyền</th>
+                        <th>Họ và tên</th>
+                        <th>Chi tiết (Mã SV / Chức vụ)</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        // 1. Khởi tạo dữ liệu nếu chưa có trong trình duyệt
+        let danhSachTaiKhoan = JSON.parse(localStorage.getItem("dbTaiKhoan"));
+        if (!danhSachTaiKhoan) {
+            danhSachTaiKhoan = [
+                { username: "admin", password: "123", role: "admin", info: { name: "Nguyễn Quản Trị", position: "Trưởng phòng Đào tạo", email: "admin@truong.edu.vn" } },
+                { username: "sv1", password: "123", role: "student", info: { name: "Trần Văn Sinh", studentId: "20230001", class: "AI-ITS K65", major: "Trí tuệ nhân tạo", status: "Đang học" } }
+            ];
+            localStorage.setItem("dbTaiKhoan", JSON.stringify(danhSachTaiKhoan));
+        }
+
+        // 2. Hàm thay đổi form khi chọn loại tài khoản
+        function doiLoaiTaiKhoan() {
+            const role = document.getElementById("role").value;
+            if (role === "student") {
+                document.getElementById("student-only").style.display = "block";
+                document.getElementById("admin-only").style.display = "none";
+            } else {
+                document.getElementById("student-only").style.display = "none";
+                document.getElementById("admin-only").style.display = "block";
+            }
+        }
+
+        // 3. Hàm hiển thị dữ liệu ra bảng
+        function hienThiBang() {
+            const tbody = document.getElementById("tableBody");
+            tbody.innerHTML = ""; // Xóa dữ liệu cũ
+            
+            danhSachTaiKhoan.forEach(tk => {
+                let chiTiet = tk.role === 'student' ? tk.info.studentId : tk.info.position;
+                let roleName = tk.role === 'student' ? 'Sinh viên' : 'Admin';
+                
+                let row = `<tr>
+                    <td>${tk.username}</td>
+                    <td>${roleName}</td>
+                    <td>${tk.info.name}</td>
+                    <td>${chiTiet}</td>
+                </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        // 4. Hàm xử lý khi bấm nút "Thêm tài khoản"
+        function themTaiKhoan(event) {
+            event.preventDefault(); // Ngăn load lại trang
+
+            const role = document.getElementById("role").value;
+            const newAccount = {
+                username: document.getElementById("username").value,
+                password: document.getElementById("password").value,
+                role: role,
+                info: { name: document.getElementById("fullname").value }
+            };
+
+            // Lấy thêm thông tin tùy theo role
+            if (role === "student") {
+                newAccount.info.studentId = document.getElementById("studentId").value;
+                newAccount.info.class = document.getElementById("studentClass").value;
+                newAccount.info.major = document.getElementById("major").value;
+                newAccount.info.status = "Đang học";
+            } else {
+                newAccount.info.position = document.getElementById("position").value;
+                newAccount.info.email = document.getElementById("email").value;
+            }
+
+            // Kiểm tra trùng lặp tên đăng nhập
+            const isExist = danhSachTaiKhoan.some(tk => tk.username === newAccount.username);
+            if(isExist) {
+                alert("Tên đăng nhập này đã tồn tại!");
+                return;
+            }
+
+            // Lưu vào mảng và cập nhật localStorage
+            danhSachTaiKhoan.push(newAccount);
+            localStorage.setItem("dbTaiKhoan", JSON.stringify(danhSachTaiKhoan));
+
+            // Reset form và vẽ lại bảng
+            document.getElementById("addAccountForm").reset();
+            doiLoaiTaiKhoan(); // Trả form về trạng thái mặc định
+            hienThiBang();
+            alert("Thêm tài khoản thành công!");
+        }
+
+        // Chạy hiển thị bảng lần đầu khi load trang
+        hienThiBang();
+    </script>
+</body>
+</html>

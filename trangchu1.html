@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chủ Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; margin: 0; height: 100vh; }
+        
+        /* Chuyển nav thành flexbox dạng cột để đẩy item xuống đáy */
+        nav { width: 250px; background-color: #2c3e50; color: white; display: flex; flex-direction: column; }
+        
+        nav ul { 
+            list-style-type: none; 
+            padding: 0; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            flex-grow: 1; /* Cho phép danh sách chiếm toàn bộ chiều cao còn lại */
+        }
+        
+        nav ul li { border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        nav ul li a { color: white; text-decoration: none; display: block; padding: 15px 20px; transition: 0.2s; }
+        nav ul li a:hover { background-color: #34495e; padding-left: 25px; } 
+        
+        /* CSS riêng cho nút Đăng xuất nằm ở dưới cùng */
+        .logout-item {
+            margin-top: auto; /* Lệnh quan trọng nhất để đẩy xuống đáy */
+            background-color: #c0392b; /* Màu đỏ nổi bật */
+            border-bottom: none;
+        }
+        .logout-item a:hover { background-color: #e74c3c; padding-left: 20px; }
+
+        main { flex-grow: 1; padding: 30px; background-color: #f4f6f7; overflow-y: auto; }
+        .account-info { background-color: white; padding: 20px 30px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 500px; margin-top: 20px; }
+        .account-info h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        .account-info p { margin: 10px 0; font-size: 16px; color: #333; }
+        .account-info strong { color: #555; display: inline-block; width: 120px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="trangchu1.html">Trang chủ</a></li>
+            <li><a href="thongtin_admin.html">Xem thông tin cá nhân</a></li>
+            <li><a href="quanly_taikhoan.html">Quản lý tài khoản</a></li>
+            <li><a href="quanly_sinhvien.html">Quản lý sinh viên</a></li>
+            <li><a href="danhsach_mon_dangkihoclai.html">DS môn học lại & Đăng ký</a></li>
+            <li><a href="danhsach_da_dangky.html">Danh sách đã đăng ký học lại</a></li>
+            <li><a href="lich_hoclai.html">Xem lịch học lại</a></li>
+            <li><a href="huy_dangky.html">Hủy đăng ký học lại</a></li>
+            
+            <li class="logout-item"><a href="#" onclick="dangXuat()">Đăng xuất</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h1>Tổng quan hệ thống</h1>
+        <div class="account-info">
+            <h2>Thông tin tài khoản Admin</h2>
+            <p><strong>Họ và tên:</strong> <span id="admin-name">...</span></p>
+            <p><strong>Chức vụ:</strong> <span id="admin-position">...</span></p>
+            <p><strong>Email:</strong> <span id="admin-email">...</span></p>
+        </div>
+    </main>
+
+    <script>
+        const user = JSON.parse(localStorage.getItem("currentUser"));
+        if (!user || user.role !== "admin") {
+            alert("Bạn không có quyền truy cập trang này!");
+            window.location.href = "dangnhap.html"; 
+        } else {
+            document.getElementById("admin-name").innerText = user.info.name;
+            document.getElementById("admin-position").innerText = user.info.position;
+            document.getElementById("admin-email").innerText = user.info.email;
+        }
+
+        function dangXuat() {
+            localStorage.removeItem("currentUser"); // Xóa phiên đăng nhập
+            window.location.href = "index.html"; // Chuyển về trang đăng nhập
+        }
+    </script>
+</body>
+</html>

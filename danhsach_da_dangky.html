@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tổng hợp Đăng ký - Admin</title>
+    <style>
+        body { font-family: Arial, sans-serif; display: flex; margin: 0; height: 100vh; background-color: #f4f6f7; }
+        nav { width: 250px; background-color: #2c3e50; color: white; display: flex; flex-direction: column; }
+        nav ul { list-style-type: none; padding: 0; margin: 0; display: flex; flex-direction: column; flex-grow: 1; }
+        nav ul li { border-bottom: 1px solid rgba(255, 255, 255, 0.2); }
+        nav ul li a { color: white; text-decoration: none; display: block; padding: 15px 20px; transition: 0.2s; }
+        nav ul li a:hover { background-color: #34495e; padding-left: 25px; } 
+        .active-menu { background-color: #34495e; padding-left: 25px; font-weight: bold; border-left: 4px solid #3498db; }
+        .logout-item { margin-top: auto; background-color: #c0392b; border-bottom: none; }
+        .logout-item a:hover { background-color: #e74c3c; padding-left: 20px; }
+
+        main { flex-grow: 1; padding: 30px; overflow-y: auto; }
+        .card { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table, th, td { border: 1px solid #bdc3c7; }
+        th, td { padding: 12px; text-align: left; }
+        th { background-color: #ecf0f1; }
+        .empty-msg { text-align: center; color: #7f8c8d; font-style: italic; padding: 20px; }
+        
+        /* Tô màu nhẹ cho tên sinh viên để dễ nhìn */
+        .sv-name { color: #2980b9; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="trangchu1.html">Trang chủ</a></li>
+            <li><a href="thongtin_admin.html">Xem thông tin cá nhân</a></li>
+            <li><a href="quanly_taikhoan.html">Quản lý tài khoản</a></li>
+            <li><a href="quanly_sinhvien.html">Quản lý sinh viên</a></li>
+            <li><a href="danhsach_mon_dangkihoclai.html">DS môn học lại & Đăng ký</a></li>
+            <li><a href="danhsach_da_dangky.html" class="active-menu">Danh sách đã đăng ký học lại</a></li>
+            <li><a href="lich_hoclai.html">Xem lịch học lại</a></li>
+            <li><a href="huy_dangky.html">Hủy đăng ký học lại</a></li>
+            <li class="logout-item"><a href="#" onclick="dangXuat()">Đăng xuất</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h1>Tổng hợp Đăng ký Học lại</h1>
+        
+        <div class="card">
+            <h2>Danh sách sinh viên đã đăng ký (Toàn trường)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>STT</th>
+                        <th>Mã Sinh Viên</th>
+                        <th>Họ và Tên</th>
+                        <th>Lớp</th>
+                        <th>Mã môn</th>
+                        <th>Tên môn đăng ký</th>
+                    </tr>
+                </thead>
+                <tbody id="admin-registered-table">
+                    </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+        if (!currentUser || currentUser.role !== "admin") {
+            window.location.href = "dangnhap.html";
+        }
+
+        function loadTongHopDangKy() {
+            const tbody = document.getElementById("admin-registered-table");
+            tbody.innerHTML = "";
+            
+            // 1. Lấy toàn bộ tài khoản trong hệ thống
+            const dbTaiKhoan = JSON.parse(localStorage.getItem("dbTaiKhoan")) || [];
+            
+            // 2. Lọc ra danh sách sinh viên
+            const danhSachSinhVien = dbTaiKhoan.filter(tk => tk.role === "student");
+            
+            let stt = 1;
+            let coDuLieu = false; // Biến kiểm tra xem có ai đăng ký chưa
+
+            // 3. Quét từng sinh viên để xem họ đăng ký môn gì
+            danhSachSinhVien.forEach(sv => {
+                const keyDangKy = "dangKy_" + sv.username;
+                const cacMonDaDangKy = JSON.parse(localStorage.getItem(keyDangKy)) || [];
+                
+                // Nếu sinh viên này có đăng ký ít nhất 1 môn
+                if (cacMonDaDangKy.length > 0) {
+                    coDuLieu = true;
+                    cacMonDaDangKy.forEach(mon => {
+                        tbody.innerHTML += `<tr>
+                            <td>${stt++}</td>
+                            <td>${sv.info.studentId || "Chưa có"}</td>
+                            <td class="sv-name">${sv.info.name}</td>
+                            <td>${sv.info.class || "Chưa có"}</td>
+                            <td><strong>${mon.maMon}</strong></td>
+                            <td>${mon.tenMon}</td>
+                        </tr>`;
+                    });
+                }
+            });
+
+            // Nếu quét xong cả trường mà không có ai đăng ký
+            if (!coDuLieu) {
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-msg">Hiện tại chưa có sinh viên nào đăng ký học lại.</td></tr>`;
+            }
+        }
+
+        function dangXuat() {
+            localStorage.removeItem("currentUser");
+            window.location.href = "dangnhap.html";
+        }
+
+        loadTongHopDangKy();
+    </script>
+</body>
+</html>
